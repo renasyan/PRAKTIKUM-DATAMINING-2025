@@ -10,7 +10,7 @@ import seaborn as sns
 #
 #1. Load Model yang sudah dilatih sebelumnya
 #
-model = load('model.joblib')
+model = joblib.load("stroke_prediction_model.joblib")
 
 # Judul
 
@@ -27,12 +27,12 @@ st.subheader("Evaluasi Model")
 #
 #2. Load dan persiapkan data sama seperti saat melatih model sebelumnya
 #
-data = pd.read_csv('dataset_StrokePredicton.csv')
+data = pd.read_csv("dataset_StrokePredicton.csv")
 
 #
 # 2.1 Drop Column yang tidak diperlukan
 #
-data = data.drop(columns=['id'])
+data.drop(['id'], axis=1, inplace=True)
 
 
 # Mengurangi jumlah data kelas mayoritas agar sesuai dengan jumlah kelas minoritas
@@ -44,16 +44,15 @@ data = pd.concat([
 #
 # 2.2 Pisahkan data menjadi fitur dan target
 #
-X = data.drop('stroke', axis=1)
+X = data.drop(['stroke'], axis=1)
 y = data['stroke']
 
 #
 # 2.3 Buat prediksi menggunakan model yang sudah dilatih 
 # Hint : ( y_pred dan y_prob )
-#
-
 y_pred = model.predict(X)
 y_prob = model.predict_proba(X)[:, 1]
+
 
 
 #
@@ -120,16 +119,16 @@ st.subheader("Prediksi Risiko Stroke")
 # )
 #
 with st.form("prediction_form"):
-    gender = st.selectbox("gender", ["Female", "Male"])
-    age = st.number_input("age", min_value=0, max_value=120, value=30) 
-    hypertension = st.selectbox("hypertension", ["Ya", "Tidak"]) 
-    heart_disease = st.selectbox("heart_disease", ["Ya", "Tidak"]) 
-    ever_married = st.selectbox("ever_married", ["Ya", "Tidak"]) 
-    work_type = st.selectbox("work_type", ["Pegawai Negeri", "Belum Pernah Bekerja", "Swasta", "Wiraswasta", "Anak-anak"]) 
-    residence_type = st.selectbox("Residence_type", ["Rural (Pedesaan)", "Urban (Perkotaan)"])
-    avg_glucose = st.number_input("avg_glucose_level", min_value=0.0, max_value=300.0, value=100.0) 
-    bmi = st.number_input("bmi", min_value=0.0, max_value=50.0, value=25.0) 
-    smoking_status = st.selectbox("smoking_status", ["Tidak diketahui", "Pernah Merokok", "Tidak Pernah Merokok", "Masih Merokok"]) 
+    gender = st.selectbox("Jenis Kelamin", ["Female", "Male"])
+    age = st.slider("Usia", 0, 100, 30)
+    hypertension = st.selectbox("Hipertensi", ["Ya", "Tidak"])
+    heart_disease = st.selectbox("Penyakit Jantung", ["Ya", "Tidak"])
+    ever_married = st.selectbox("Pernah Menikah?", ["Ya", "Tidak"])
+    work_type = st.selectbox("Jenis Pekerjaan", ["Pegawai Negeri", "Belum Pernah Bekerja", "Swasta", "Wiraswasta", "Anak-anak"])
+    residence_type = st.selectbox("Tinggal di", ["Rural (Pedesaan)", "Urban (Perkotaan)"])
+    avg_glucose = st.number_input("Rata-rata Glukosa", min_value=50.0, max_value=300.0, value=100.0)
+    bmi = st.number_input("BMI", min_value=10.0, max_value=50.0, value=25.0)
+    smoking_status = st.selectbox("Status Merokok", ["Tidak diketahui", "Pernah Merokok", "Tidak Pernah Merokok", "Masih Merokok"])
 
     submit = st.form_submit_button("Prediksi")
 
@@ -148,22 +147,22 @@ def map_inputs():
     #
 
     return pd.DataFrame([{
-        "gender": ,
-        "age": ,
-        "hypertension": ,
-        "heart_disease": ,
-        "ever_married": ,
-        "work_type": ,
-        "Residence_type": ,
-        "avg_glucose_level": ,
-        "bmi": ,
-        "smoking_status": 
+        "gender": gender_map[gender],
+        "age": age,
+        "hypertension": hypertension_map[hypertension],
+        "heart_disease": heart_map[heart_disease],
+        "ever_married": married_map[ever_married],
+        "work_type": work_map[work_type],
+        "Residence_type": residence_map[residence_type],
+        "avg_glucose_level": avg_glucose,
+        "bmi": bmi,
+        "smoking_status": smoke_map[smoking_status]
     }])
 
 if submit:
     input_df = map_inputs()
-    prob = model.predict_proba(input_df)[0][1]
-    pred = model.predict(input_df)[0]
+    prob = model.predict_proba(input_df.values)[0][1]
+    pred = model.predict(input_df.values)[0]
 
     st.subheader("Hasil Prediksi")
     st.write(f"Pasien diprediksi: **{'Berpotensi Mengalami Stroke' if pred == 1 else 'Berpotensi Tidak Mengalami Stroke'}**")
