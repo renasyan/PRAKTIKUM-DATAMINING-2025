@@ -126,7 +126,7 @@ st.subheader("Prediksi Risiko Stroke")
 #
 with st.form("prediction_form"):
     gender = st.selectbox("gender", ["Female", "Male"])
-    age = st.number_input("age", min_value=0, max_value=120, value=30) 
+    age = st.slider("age", min_value=0, max_value=120, value=30) 
     hypertension = st.selectbox("hypertension", ["Ya", "Tidak"]) 
     heart_disease = st.selectbox("heart_disease", ["Ya", "Tidak"]) 
     ever_married = st.selectbox("ever_married", ["Ya", "Tidak"]) 
